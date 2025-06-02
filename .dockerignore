@@ -1,0 +1,16 @@
+.git
+.gitignore
+.venv
+venv
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+.coverage
+.pytest_cache
+.tox
+.ipynb_checkpoints
+dist
+build
+*.egg-info
