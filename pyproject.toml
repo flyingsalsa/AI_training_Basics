@@ -1,22 +1,22 @@
 [project]
-name = "ai-project-1"
+name = "ai_training"
 version = "0.1.0"
 description = ""
 authors = [
     {name = "Sleepyday",email = "107453007+flyingsalsa@users.noreply.github.com"}
 ]
 readme = "README.md"
-requires-python = ">=3.12"
+requires-python = ">=3.12,<3.13"
 dependencies = [
     "tensorflow (>=2.19.0,<3.0.0)",
     "pandas (>=2.2.3,<3.0.0)",
     "scikit-learn (>=1.6.1,<2.0.0)",
-    "matplotlib (>=3.10.3,<4.0.0)"
+    "matplotlib (>=3.10.3,<4.0.0)",
+    "numpy (==2.1.0)"
 ]
 
 [tool.poetry]
-packages = [{include = "ai_project_1", from = "src"}]
-
+packages = [{ include = "ai_training", from = "src" }]
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
