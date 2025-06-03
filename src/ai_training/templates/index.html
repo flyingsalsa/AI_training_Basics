@@ -4,425 +4,89 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Semantic Similarity API</title>
-    <style>
-        /* Clean, modern styling that makes the interface feel professional */
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 20px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            color: #333;
-        }
-        
-        .container {
-            background: rgba(255, 255, 255, 0.95);
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
-            margin-bottom: 25px;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-        
-        h1 {
-            color: #2c3e50;
-            text-align: center;
-            font-size: 2.5em;
-            margin-bottom: 10px;
-            background: linear-gradient(45deg, #667eea, #764ba2);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        
-        .subtitle {
-            text-align: center;
-            color: #7f8c8d;
-            font-size: 1.1em;
-            margin-bottom: 0;
-        }
-        
-        h2 {
-            color: #34495e;
-            margin-top: 0;
-            font-size: 1.4em;
-            border-bottom: 2px solid #3498db;
-            padding-bottom: 8px;
-        }
-        
-        .description {
-            color: #666;
-            margin-bottom: 20px;
-            line-height: 1.6;
-        }
-        
-        textarea, input[type="text"] {
-            width: 100%;
-            padding: 15px;
-            border: 2px solid #e1e8ed;
-            border-radius: 10px;
-            font-size: 14px;
-            font-family: inherit;
-            margin-bottom: 15px;
-            box-sizing: border-box;
-            transition: all 0.3s ease;
-            resize: vertical;
-        }
-        
-        textarea:focus, input[type="text"]:focus {
-            border-color: #3498db;
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
-            transform: translateY(-1px);
-        }
-        
-        button {
-            background: linear-gradient(45deg, #3498db, #2980b9);
-            color: white;
-            padding: 15px 30px;
-            border: none;
-            border-radius: 25px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
-        }
-        
-        button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(52, 152, 219, 0.4);
-        }
-        
-        button:disabled {
-            background: #bdc3c7;
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
-        }
-        
-        .result {
-            background: linear-gradient(45deg, #f8f9fa, #e9ecef);
-            padding: 20px;
-            border-radius: 10px;
-            margin-top: 20px;
-            border-left: 4px solid #3498db;
-            animation: fadeIn 0.5s ease-in;
-        }
-        
-        .error {
-            background: linear-gradient(45deg, #ffebee, #ffcdd2);
-            border-left-color: #e74c3c;
-            color: #c0392b;
-        }
-        
-        .loading {
-            color: #7f8c8d;
-            font-style: italic;
-            text-align: center;
-        }
-        
-        .similarity-score {
-            font-size: 24px;
-            font-weight: bold;
-            background: linear-gradient(45deg, #27ae60, #2ecc71);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            text-align: center;
-            margin-bottom: 10px;
-        }
-        
-        .execution-time {
-            font-size: 12px;
-            color: #7f8c8d;
-            text-align: center;
-            margin-top: 10px;
-        }
-        
-        .embedding-preview {
-            max-height: 200px;
-            overflow-y: auto;
-            font-family: 'Courier New', monospace;
-            font-size: 11px;
-            background-color: #2c3e50;
-            color: #ecf0f1;
-            padding: 15px;
-            border-radius: 8px;
-            margin-top: 10px;
-        }
-        
-        .stats {
-            display: flex;
-            justify-content: space-between;
-            margin: 10px 0;
-            font-weight: 500;
-        }
-        
-        details {
-            margin-top: 15px;
-        }
-        
-        summary {
-            cursor: pointer;
-            color: #3498db;
-            font-weight: 500;
-            padding: 5px 0;
-        }
-        
-        summary:hover {
-            color: #2980b9;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        .input-group {
-            margin-bottom: 20px;
-        }
-        
-        label {
-            display: block;
-            font-weight: 600;
-            color: #34495e;
-            margin-bottom: 8px;
-        }
-        
-        .button-container {
-            text-align: center;
-            margin: 25px 0;
-        }
-    </style>
+    <!-- Bootstrap CSS - this single line gives us professional styling -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons for visual elements -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
 </head>
-<body>
-    <div class="container">
-        <h1>🔍 Semantic Similarity API</h1>
-        <p class="subtitle">
-            Explore text embeddings and semantic similarity with AI-powered natural language understanding
-        </p>
+<body class="bg-light">
+    <div class="container my-5">
+        <!-- Hero section with gradient background -->
+        <div class="card border-0 shadow-lg mb-4" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+            <div class="card-body text-center text-white py-5">
+                <h1 class="display-4 fw-bold mb-3">
+                    <i class="bi bi-search me-2"></i>Semantic Similarity API
+                </h1>
+                <p class="lead">Explore text embeddings and semantic similarity with AI-powered analysis</p>
+            </div>
+        </div>
+
+        <!-- Similarity Calculator Card -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-primary text-white">
+                <h2 class="h4 mb-0">
+                    <i class="bi bi-bar-chart me-2"></i>Similarity Calculator
+                </h2>
+            </div>
+            <div class="card-body">
+                <p class="text-muted mb-4">
+                    Compare two pieces of text to see how semantically similar they are. 
+                    Scores range from 0 (completely different) to 1 (identical meaning).
+                </p>
+                
+                <div class="mb-3">
+                    <label for="text1" class="form-label fw-semibold">First Text:</label>
+                    <textarea class="form-control" id="text1" rows="3" 
+                              placeholder="Enter your first text here...">The cat sat on the mat</textarea>
+                </div>
+                
+                <div class="mb-4">
+                    <label for="text2" class="form-label fw-semibold">Second Text:</label>
+                    <textarea class="form-control" id="text2" rows="3" 
+                              placeholder="Enter your second text here...">A feline rested on the rug</textarea>
+                </div>
+                
+                <div class="text-center">
+                    <button class="btn btn-primary btn-lg px-4" onclick="calculateSimilarity()" id="similarityBtn">
+                        <i class="bi bi-calculator me-2"></i>Calculate Similarity
+                    </button>
+                </div>
+                
+                <div id="similarityResult"></div>
+            </div>
+        </div>
+
+        <!-- Embedding Generator Card -->
+        <div class="card shadow-sm">
+            <div class="card-header bg-success text-white">
+                <h2 class="h4 mb-0">
+                    <i class="bi bi-cpu me-2"></i>Text Embedding Generator
+                </h2>
+            </div>
+            <div class="card-body">
+                <p class="text-muted mb-4">
+                    Generate a numerical vector representation that captures the semantic meaning of your text.
+                </p>
+                
+                <div class="mb-4">
+                    <label for="embeddingText" class="form-label fw-semibold">Text to Analyze:</label>
+                    <textarea class="form-control" id="embeddingText" rows="3" 
+                              placeholder="Enter text to get its embedding...">Hello, world!</textarea>
+                </div>
+                
+                <div class="text-center">
+                    <button class="btn btn-success btn-lg px-4" onclick="getEmbedding()" id="embeddingBtn">
+                        <i class="bi bi-gear me-2"></i>Generate Embedding
+                    </button>
+                </div>
+                
+                <div id="embeddingResult"></div>
+            </div>
+        </div>
     </div>
 
-    <div class="container">
-        <h2>📊 Similarity Calculator</h2>
-        <p class="description">
-            Compare two pieces of text to discover how semantically similar they are. The system analyzes the meaning 
-            behind the words rather than just matching letters. A score of 0 means completely different meanings, 
-            while 1 indicates identical semantic content.
-        </p>
-        
-        <div class="input-group">
-            <label for="text1">First Text:</label>
-            <textarea id="text1" rows="4" placeholder="Enter your first text here...">The cat sat on the mat</textarea>
-        </div>
-        
-        <div class="input-group">
-            <label for="text2">Second Text:</label>
-            <textarea id="text2" rows="4" placeholder="Enter your second text here...">A feline rested on the rug</textarea>
-        </div>
-        
-        <div class="button-container">
-            <button onclick="calculateSimilarity()" id="similarityBtn">✨ Calculate Similarity</button>
-        </div>
-        <div id="similarityResult"></div>
-    </div>
-
-    <div class="container">
-        <h2>🎯 Text Embedding Generator</h2>
-        <p class="description">
-            Transform any text into a numerical vector representation that captures its semantic meaning. 
-            These embeddings are what enable computers to understand and compare the meaning of different texts. 
-            Each dimension in the vector represents different aspects of the text's meaning.
-        </p>
-        
-        <div class="input-group">
-            <label for="embeddingText">Text to Analyze:</label>
-            <textarea id="embeddingText" rows="4" placeholder="Enter text to get its embedding vector...">Hello, world! This is a test of semantic understanding.</textarea>
-        </div>
-        
-        <div class="button-container">
-            <button onclick="getEmbedding()" id="embeddingBtn">🧠 Generate Embedding</button>
-        </div>
-        <div id="embeddingResult"></div>
-    </div>
-
-    <script>
-        /* 
-         * This JavaScript handles all the interaction with our API.
-         * It's like having a translator that converts user actions into API calls.
-         */
-        
-        // Function to calculate similarity between two texts
-        async function calculateSimilarity() {
-            const text1 = document.getElementById('text1').value.trim();
-            const text2 = document.getElementById('text2').value.trim();
-            const resultDiv = document.getElementById('similarityResult');
-            const button = document.getElementById('similarityBtn');
-            
-            // Input validation - make sure we have both texts
-            if (!text1 || !text2) {
-                resultDiv.innerHTML = '<div class="result error">⚠️ Please enter both texts to compare them.</div>';
-                return;
-            }
-            
-            // Show loading state to give user feedback
-            button.disabled = true;
-            button.textContent = '🔄 Calculating...';
-            resultDiv.innerHTML = '<div class="result loading">🧮 Computing semantic similarity using neural networks...</div>';
-            
-            try {
-                // Make the API call to our similarity endpoint
-                const response = await fetch('/similarity', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        text1: text1,
-                        text2: text2
-                    })
-                });
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                
-                const data = await response.json();
-                
-                // Create a visual representation of the similarity score
-                const percentage = (data.similarity * 100).toFixed(1);
-                const scoreColor = data.similarity > 0.7 ? '#27ae60' : data.similarity > 0.4 ? '#f39c12' : '#e74c3c';
-                
-                // Display results with rich formatting
-                resultDiv.innerHTML = `
-                    <div class="result">
-                        <div class="similarity-score" style="color: ${scoreColor}">
-                            Similarity Score: ${percentage}%
-                        </div>
-                        <div style="text-align: center; margin: 15px 0;">
-                            ${getSimilarityDescription(data.similarity)}
-                        </div>
-                        <div class="execution-time">
-                            Computed in ${(data.execution_time * 1000).toFixed(1)}ms using ${MODEL_NAME || 'sentence transformer'} model
-                        </div>
-                    </div>
-                `;
-                
-            } catch (error) {
-                resultDiv.innerHTML = `<div class="result error">❌ Error: ${error.message}</div>`;
-            } finally {
-                // Reset button to its original state
-                button.disabled = false;
-                button.textContent = '✨ Calculate Similarity';
-            }
-        }
-        
-        // Helper function to provide context about similarity scores
-        function getSimilarityDescription(score) {
-            if (score > 0.8) return "🎯 These texts are highly similar in meaning";
-            if (score > 0.6) return "✅ These texts share similar concepts";
-            if (score > 0.4) return "🔄 These texts have some common themes";
-            if (score > 0.2) return "📝 These texts have limited similarity";
-            return "🔀 These texts are quite different in meaning";
-        }
-        
-        // Function to generate embedding for a single text
-        async function getEmbedding() {
-            const text = document.getElementById('embeddingText').value.trim();
-            const resultDiv = document.getElementById('embeddingResult');
-            const button = document.getElementById('embeddingBtn');
-            
-            if (!text) {
-                resultDiv.innerHTML = '<div class="result error">⚠️ Please enter some text to analyze.</div>';
-                return;
-            }
-            
-            // Show loading state
-            button.disabled = true;
-            button.textContent = '⚡ Generating...';
-            resultDiv.innerHTML = '<div class="result loading">🔬 Analyzing text and generating embedding vector...</div>';
-            
-            try {
-                // Call our embedding endpoint
-                const response = await fetch('/embedding', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        text: text
-                    })
-                });
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                
-                const data = await response.json();
-                
-                // Create a preview of the embedding (first 10 values)
-                const embeddingShort = data.embedding.slice(0, 10).map(x => x.toFixed(4)).join(', ');
-                
-                // Calculate some basic statistics about the embedding
-                const minVal = Math.min(...data.embedding).toFixed(4);
-                const maxVal = Math.max(...data.embedding).toFixed(4);
-                const avgVal = (data.embedding.reduce((a, b) => a + b, 0) / data.embedding.length).toFixed(4);
-                
-                resultDiv.innerHTML = `
-                    <div class="result">
-                        <div style="text-align: center; margin-bottom: 15px;">
-                            <strong>✅ Embedding Generated Successfully!</strong>
-                        </div>
-                        <div class="stats">
-                            <span>📏 Dimensions: ${data.embedding.length}</span>
-                            <span>⚡ Time: ${(data.execution_time * 1000).toFixed(1)}ms</span>
-                        </div>
-                        <div class="stats">
-                            <span>📊 Min: ${minVal}</span>
-                            <span>📊 Avg: ${avgVal}</span>
-                            <span>📊 Max: ${maxVal}</span>
-                        </div>
-                        <div style="margin: 15px 0;">
-                            <strong>Preview (first 10 dimensions):</strong><br>
-                            [${embeddingShort}...]
-                        </div>
-                        <details>
-                            <summary>🔍 Click to view complete embedding vector</summary>
-                            <div class="embedding-preview">[${data.embedding.map(x => x.toFixed(6)).join(',\n ')}]</div>
-                        </details>
-                    </div>
-                `;
-                
-            } catch (error) {
-                resultDiv.innerHTML = `<div class="result error">❌ Error: ${error.message}</div>`;
-            } finally {
-                // Reset button
-                button.disabled = false;
-                button.textContent = '🧠 Generate Embedding';
-            }
-        }
-        
-        // Keyboard shortcuts for better user experience
-        document.getElementById('text1').addEventListener('keydown', function(e) {
-            if (e.ctrlKey && e.key === 'Enter') {
-                calculateSimilarity();
-            }
-        });
-        
-        document.getElementById('text2').addEventListener('keydown', function(e) {
-            if (e.ctrlKey && e.key === 'Enter') {
-                calculateSimilarity();
-            }
-        });
-        
-        document.getElementById('embeddingText').addEventListener('keydown', function(e) {
-            if (e.ctrlKey && e.key === 'Enter') {
-                getEmbedding();
-            }
-        });
-    </script>
+    <!-- Bootstrap JavaScript for interactive components -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Your custom JavaScript would go here -->
 </body>
 </html>
