@@ -1,6 +1,7 @@
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from typing import List, Dict, Any
 from sentence_transformers import SentenceTransformer, util
@@ -60,6 +61,9 @@ async def startup_event():
     print(f"Loading model {MODEL_NAME}...")
     model = SentenceTransformer(MODEL_NAME)
     print("Model loaded successfully!")
+    
+# Static files route - this serves our CSS and JS files
+app.mount("/static", StaticFiles(directory="templates"), name="static")
 
 # Web interface route - this serves our HTML page
 @app.get("/", response_class=HTMLResponse)
@@ -123,7 +127,8 @@ def calculate_similarity(request: SimilarityRequest):
     
     return {
         "similarity": similarity,
-        "execution_time": end_time - start_time
+        "execution_time": end_time - start_time,
+        "model_name": MODEL_NAME
     }
 
 # Run this if script is executed directly

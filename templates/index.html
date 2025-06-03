@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Semantic Similarity API</title>
+    <link rel="stylesheet" href="./static/styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Semantic Similarity API</h1>
+        <p class="subtitle">
+            Explore text embeddings and semantic similarity with AI-powered natural language understanding
+        </p>
+    </div>
+
+    <div class="container">
+        <h2>📊 Similarity Calculator</h2>
+        <p class="description">
+            Compare two pieces of text to discover how semantically similar they are. The system analyzes the meaning 
+            behind the words rather than just matching letters. A score of 0 means completely different meanings, 
+            while 1 indicates identical semantic content.
+        </p>
+        
+        <div class="input-group">
+            <label for="text1">First Text:</label>
+            <textarea id="text1" rows="4" placeholder="Enter your first text here...">The cat sat on the mat</textarea>
+        </div>
+        
+        <div class="input-group">
+            <label for="text2">Second Text:</label>
+            <textarea id="text2" rows="4" placeholder="Enter your second text here...">A feline rested on the rug</textarea>
+        </div>
+        
+        <div class="button-container">
+            <button onclick="calculateSimilarity()" id="similarityBtn">✨ Calculate Similarity</button>
+        </div>
+        <div id="similarityResult"></div>
+    </div>
+
+    <div class="container">
+        <h2>🎯 Text Embedding Generator</h2>
+        <p class="description">
+            Transform any text into a numerical vector representation that captures its semantic meaning. 
+            These embeddings are what enable computers to understand and compare the meaning of different texts. 
+            Each dimension in the vector represents different aspects of the text's meaning.
+        </p>
+        
+        <div class="input-group">
+            <label for="embeddingText">Text to Analyze:</label>
+            <textarea id="embeddingText" rows="4" placeholder="Enter text to get its embedding vector...">Hello, world! This is a test of semantic understanding.</textarea>
+        </div>
+        
+        <div class="button-container">
+            <button onclick="getEmbedding()" id="embeddingBtn">🧠 Generate Embedding</button>
+        </div>
+        <div id="embeddingResult"></div>
+    </div>
+
+    <script>
+        /* 
+         * This JavaScript handles all the interaction with our API.
+         * It's like having a translator that converts user actions into API calls.
+         */
+        
+        // Function to calculate similarity between two texts
+        async function calculateSimilarity() {
+            const text1 = document.getElementById('text1').value.trim();
+            const text2 = document.getElementById('text2').value.trim();
+            const resultDiv = document.getElementById('similarityResult');
+            const button = document.getElementById('similarityBtn');
+            
+            // Input validation - make sure we have both texts
+            if (!text1 || !text2) {
+                resultDiv.innerHTML = '<div class="result error">⚠️ Please enter both texts to compare them.</div>';
+                return;
+            }
+            
+            // Show loading state to give user feedback
+            button.disabled = true;
+            button.textContent = '🔄 Calculating...';
+            resultDiv.innerHTML = '<div class="result loading">🧮 Computing semantic similarity using neural networks...</div>';
+            
+            try {
+                // Make the API call to our similarity endpoint
+                const response = await fetch('/similarity', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        text1: text1,
+                        text2: text2
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                // Create a visual representation of the similarity score
+                const percentage = (data.similarity * 100).toFixed(1);
+                const scoreColor = data.similarity > 0.7 ? '#27ae60' : data.similarity > 0.4 ? '#f39c12' : '#e74c3c';
+                const modelName = data.model_name || 'sentence transformer'; // If the model name is not provided, 
+                                                                             // use a default
+                
+                // Display results with rich formatting
+                resultDiv.innerHTML = `
+                    <div class="result">
+                        <div class="similarity-score" style="color: ${scoreColor}">
+                            Similarity Score: ${percentage}%
+                        </div>
+                        <div style="text-align: center; margin: 15px 0;">
+                            ${getSimilarityDescription(data.similarity)}
+                        </div>
+                        <div class="execution-time">
+                            Computed in ${(data.execution_time * 1000).toFixed(1)}ms using ${modelName || 'sentence transformer'} model
+                        </div>
+                    </div>
+                `;
+                
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="result error">❌ Error: ${error.message}</div>`;
+            } finally {
+                // Reset button to its original state
+                button.disabled = false;
+                button.textContent = '✨ Calculate Similarity';
+            }
+        }
+        
+        // Helper function to provide context about similarity scores
+        function getSimilarityDescription(score) {
+            if (score > 0.8) return "🎯 These texts are highly similar in meaning";
+            if (score > 0.6) return "✅ These texts share similar concepts";
+            if (score > 0.4) return "🔄 These texts have some common themes";
+            if (score > 0.2) return "📝 These texts have limited similarity";
+            return "🔀 These texts are quite different in meaning";
+        }
+        
+        // Function to generate embedding for a single text
+        async function getEmbedding() {
+            const text = document.getElementById('embeddingText').value.trim();
+            const resultDiv = document.getElementById('embeddingResult');
+            const button = document.getElementById('embeddingBtn');
+            
+            if (!text) {
+                resultDiv.innerHTML = '<div class="result error">⚠️ Please enter some text to analyze.</div>';
+                return;
+            }
+            
+            // Show loading state
+            button.disabled = true;
+            button.textContent = '⚡ Generating...';
+            resultDiv.innerHTML = '<div class="result loading">🔬 Analyzing text and generating embedding vector...</div>';
+            
+            try {
+                // Call our embedding endpoint
+                const response = await fetch('/embedding', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        text: text
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                // Create a preview of the embedding (first 10 values)
+                const embeddingShort = data.embedding.slice(0, 10).map(x => x.toFixed(4)).join(', ');
+                
+                // Calculate some basic statistics about the embedding
+                const minVal = Math.min(...data.embedding).toFixed(4);
+                const maxVal = Math.max(...data.embedding).toFixed(4);
+                const avgVal = (data.embedding.reduce((a, b) => a + b, 0) / data.embedding.length).toFixed(4);
+                
+                resultDiv.innerHTML = `
+                    <div class="result">
+                        <div style="text-align: center; margin-bottom: 15px;">
+                            <strong>✅ Embedding Generated Successfully!</strong>
+                        </div>
+                        <div class="stats">
+                            <span>📏 Dimensions: ${data.embedding.length}</span>
+                            <span>⚡ Time: ${(data.execution_time * 1000).toFixed(1)}ms</span>
+                        </div>
+                        <div class="stats">
+                            <span>📊 Min: ${minVal}</span>
+                            <span>📊 Avg: ${avgVal}</span>
+                            <span>📊 Max: ${maxVal}</span>
+                        </div>
+                        <div style="margin: 15px 0;">
+                            <strong>Preview (first 10 dimensions):</strong><br>
+                            [${embeddingShort}...]
+                        </div>
+                        <details>
+                            <summary>🔍 Click to view complete embedding vector</summary>
+                            <div class="embedding-preview">[${data.embedding.map(x => x.toFixed(6)).join(',\n ')}]</div>
+                        </details>
+                    </div>
+                `;
+                
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="result error">❌ Error: ${error.message}</div>`;
+            } finally {
+                // Reset button
+                button.disabled = false;
+                button.textContent = '🧠 Generate Embedding';
+            }
+        }
+        
+        // Keyboard shortcuts for better user experience
+        document.getElementById('text1').addEventListener('keydown', function(e) {
+            if (e.ctrlKey && e.key === 'Enter') {
+                calculateSimilarity();
+            }
+        });
+        
+        document.getElementById('text2').addEventListener('keydown', function(e) {
+            if (e.ctrlKey && e.key === 'Enter') {
+                calculateSimilarity();
+            }
+        });
+        
+        document.getElementById('embeddingText').addEventListener('keydown', function(e) {
+            if (e.ctrlKey && e.key === 'Enter') {
+                getEmbedding();
+            }
+        });
+    </script>
+</body>
+</html>
