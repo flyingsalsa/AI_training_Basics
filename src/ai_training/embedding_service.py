@@ -1,5 +1,6 @@
-
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
+from fastapi.responses import HTMLResponse
+from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel
 from typing import List, Dict, Any
 from sentence_transformers import SentenceTransformer, util
@@ -15,14 +16,18 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# Create model directory if it doesn't exist
+# Create directories if they don't exist
 os.makedirs('models', exist_ok=True)
+os.makedirs('templates', exist_ok=True)
+
+# Setup templates - this tells FastAPI where to find our HTML files
+templates = Jinja2Templates(directory="templates")
 
 # Initialize the model
 MODEL_NAME = "all-MiniLM-L6-v2"
 model = None
 
-# Pydantic models for request and response
+# Pydantic models for request and response (keeping your original structure)
 class TextItem(BaseModel):
     text: str
 
@@ -47,17 +52,33 @@ class BatchEmbeddingResponse(BaseModel):
 
 @app.on_event("startup")
 async def startup_event():
+    """
+    This function runs when the server starts up.
+    It loads our machine learning model into memory so it's ready to use.
+    """
     global model
     print(f"Loading model {MODEL_NAME}...")
     model = SentenceTransformer(MODEL_NAME)
     print("Model loaded successfully!")
 
-@app.get("/")
-def read_root():
+# Web interface route - this serves our HTML page
+@app.get("/", response_class=HTMLResponse)
+async def get_web_interface(request: Request):
+    """
+    This endpoint serves our web interface.
+    When someone visits the root URL, they'll see our HTML page.
+    """
+    return templates.TemplateResponse("index.html", {"request": request})
+
+# API Routes (your original endpoints, unchanged)
+@app.get("/api")
+def read_api_root():
+    """Simple endpoint to verify the API is working"""
     return {"message": "Semantic Similarity API is running"}
 
 @app.post("/embedding", response_model=EmbeddingResponse)
 def get_embedding(item: TextItem):
+    """Generate an embedding vector for a single piece of text"""
     if not model:
         raise HTTPException(status_code=503, detail="Model not loaded yet")
     
@@ -72,6 +93,7 @@ def get_embedding(item: TextItem):
 
 @app.post("/batch_embedding", response_model=BatchEmbeddingResponse)
 def get_batch_embedding(item: TextsItem):
+    """Generate embedding vectors for multiple pieces of text at once"""
     if not model:
         raise HTTPException(status_code=503, detail="Model not loaded yet")
     
@@ -86,15 +108,16 @@ def get_batch_embedding(item: TextsItem):
 
 @app.post("/similarity", response_model=SimilarityResponse)
 def calculate_similarity(request: SimilarityRequest):
+    """Calculate semantic similarity between two pieces of text"""
     if not model:
         raise HTTPException(status_code=503, detail="Model not loaded yet")
     
     start_time = time.time()
-    # Encode both texts
+    # Encode both texts into vector representations
     embedding1 = model.encode(request.text1)
     embedding2 = model.encode(request.text2)
     
-    # Calculate cosine similarity
+    # Calculate cosine similarity between the vectors
     similarity = util.cos_sim(embedding1, embedding2).item()
     end_time = time.time()
     
