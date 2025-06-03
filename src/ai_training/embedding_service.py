@@ -42,6 +42,7 @@ class SimilarityRequest(BaseModel):
 class SimilarityResponse(BaseModel):
     similarity: float
     execution_time: float
+    model_name: str
 
 class EmbeddingResponse(BaseModel):
     embedding: List[float]
@@ -61,7 +62,7 @@ async def startup_event():
     print(f"Loading model {MODEL_NAME}...")
     model = SentenceTransformer(MODEL_NAME)
     print("Model loaded successfully!")
-    
+
 # Static files route - this serves our CSS and JS files
 app.mount("/static", StaticFiles(directory="templates"), name="static")
 
