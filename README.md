@@ -67,8 +67,17 @@ poetry run python src/ai_training/train_model.py
 ### 4. Run the Semantic Similarity API
 
 ```sh
-poetry run uvicorn src.ai_training.embedding_service:app --reload
+poetry run python src/ai_training/embedding_service.py
 ```
+it should say 
+```
+INFO:     Started server process [XXXX]
+INFO:     Waiting for application startup.
+Loading model all-MiniLM-L6-v2...
+Model loaded successfully!
+INFO:     Application startup complete.
+```
+when it has finished setting up the Port and Application for use
 
 - Visit [http://localhost:8000](http://localhost:8000) for the web UI.
 - API docs: [http://localhost:8000/docs](http://localhost:8000/docs)
@@ -103,13 +112,7 @@ See [`src/ai_training/embedding_service.py`](src/ai_training/embedding_service.p
 ---
 
 ## Development Guide
-
-See [`AI_Development_Tools_Guide.ipynb`](AI_Development_Tools_Guide.ipynb) for:
-- Poetry/UV setup
-- Dependency management
-- Git & GitHub workflow
-- Docker/Docker Compose usage
-- Example scripts and best practices
+<b> WIP <b/>
 
 ---
 
