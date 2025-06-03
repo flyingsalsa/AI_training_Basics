@@ -1,2 +1,2 @@
 models/** 
-pycache/** 
+src/ai_training/__pycache__/
